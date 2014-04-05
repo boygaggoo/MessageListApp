@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Message List App</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="textview">Isaac is learning Android!</string>
     <string name="action_settings">Settings</string>
 
 </resources>
