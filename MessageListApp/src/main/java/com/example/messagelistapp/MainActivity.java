@@ -3,6 +3,7 @@ package com.example.messagelistapp;
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ShareActionProvider;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -28,6 +30,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
     ListView mainListView;
     ArrayAdapter mArrayAdapter;
     ArrayList mNameList = new ArrayList();
+    ShareActionProvider mShareActionProvider;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,22 +62,40 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
-        // Inflate the menu; this adds items to the action bar if it is present.
+
+        // Inflate the menu.
+        // Adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
+        // Access the Share Item defined in menu XML
+        MenuItem shareItem = menu.findItem(R.id.menu_item_share);
+
+        // Access the object responsible for
+        // putting together the sharing submenu
+        if (shareItem != null) {
+            mShareActionProvider = (ShareActionProvider)shareItem.getActionProvider();
+        }
+
+        // Create an Intent to share your content
+        setShareIntent();
+
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+    private void setShareIntent() {
+
+        if (mShareActionProvider != null) {
+
+            // create an Intent with the contents of the TextView
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Android Development");
+            shareIntent.putExtra(Intent.EXTRA_TEXT, mainTextView.getText());
+
+            // Make sure the provider knows
+            // it should work with that Intent
+            mShareActionProvider.setShareIntent(shareIntent);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -86,6 +107,9 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
         // Also add that value to the list shown in the ListView
         mNameList.add(mainEditText.getText().toString());
         mArrayAdapter.notifyDataSetChanged();
+        // 6. The text you'd like to share has changed,
+        // and you need to update
+        setShareIntent();
     }
 
     @Override
